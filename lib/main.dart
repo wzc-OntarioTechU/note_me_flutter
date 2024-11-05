@@ -4,7 +4,17 @@ import 'package:flutter/widgets.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 
-void main() {
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized(); // ensure that the db binding has loaded
+  final database = openDatabase(
+    join(await getDatabasesPath(), "notes.db"), // open/create the database file as notes.db
+    onCreate: (db, version) {
+      return db.execute("CREATE TABLE notes(id INTEGER PRIMARY KEY NOT NULL, title TEXT NOT NULL, subject TEXT, body TEXT, color INTEGER, photo_id_array TEXT);"
+          "CREATE TABLE photos(id INTEGER PRIMARY KEY NOT NULL, data BLOB NOT NULL);");
+    },
+    version: 1 // since we are starting anew
+  );
   runApp(const NoteMe());
 }
 
@@ -28,33 +38,17 @@ class NoteMe extends StatelessWidget {
 class HomePage extends StatefulWidget {
   const HomePage({super.key, required this.title});
 
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
-
   final String title;
 
   @override
-  State<HomePage> createState() => _MyHomePageState();
+  State<HomePage> createState() => HomePageState();
 }
 
-class _MyHomePageState extends State<HomePage> {
-  int _counter = 0;
+class HomePageState extends State<HomePage> {
+  int noteCount = 0;
 
-  void _incrementCounter() {
-    setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
-    });
+  Future<void> refreshFromDB() async {
+    final db = await database;
   }
 
   @override
@@ -87,14 +81,14 @@ class _MyHomePageState extends State<HomePage> {
               'You have pushed the button this many times:',
             ),
             Text(
-              '$_counter',
+              'hi',
               style: Theme.of(context).textTheme.headlineMedium,
             ),
           ],
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
+        onPressed: refreshFromDB,
         tooltip: 'Increment',
         child: const Icon(Icons.add),
       ), // This trailing comma makes auto-formatting nicer for build methods.
