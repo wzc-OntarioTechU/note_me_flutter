@@ -1,7 +1,7 @@
 class Note {
   final int? id; // Nullable for new notes
   String title;
-  String subtitle;
+  String subject;
   String body;
   int colour;
   DateTime created;
@@ -10,7 +10,7 @@ class Note {
   Note({
     this.id,
     required this.title,
-    required this.subtitle,
+    required this.subject,
     required this.body,
     required this.colour,
     required this.created,
@@ -22,7 +22,7 @@ class Note {
     return {
       'id': id,
       'title': title,
-      'subtitle': subtitle,
+      'subject': subject,
       'body': body,
       'colour': colour,
       'created': created.millisecondsSinceEpoch, // Store DateTime as milliseconds since epoch
@@ -35,7 +35,7 @@ class Note {
     return Note(
       id: map['id'],
       title: map['title'],
-      subtitle: map['subtitle'],
+      subject: map['subject'],
       body: map['body'],
       colour: map['colour'],
       created: DateTime.fromMillisecondsSinceEpoch(map['created']),
@@ -46,14 +46,14 @@ class Note {
   // Update fields of the note (optional)
   void update({
     String? title,
-    String? subtitle,
+    String? subject,
     String? body,
     int? colour,
     DateTime? created,
     String? photopath,
   }) {
     if (title != null) this.title = title;
-    if (subtitle != null) this.subtitle = subtitle;
+    if (subject != null) this.subject = subject;
     if (body != null) this.body = body;
     if (colour != null) this.colour = colour;
     if (created != null) this.created = created;

@@ -3,8 +3,8 @@ import 'package:path/path.dart';
 import 'note.dart'; // Assuming you have a Note class similar to your Java model
 
 class DatabaseHandler {
-  static const _databaseName = 'notes.db';
-  static const _databaseVersion = 3;
+  static const _databaseName = 'flutter_note.db';
+  static const _databaseVersion = 4;
 
   static const tableNotes = 'notes';
 
@@ -36,7 +36,7 @@ class DatabaseHandler {
       CREATE TABLE $tableNotes (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         title TEXT,
-        subtitle TEXT,
+        subject TEXT,
         body TEXT,
         colour INTEGER,
         created INTEGER,
@@ -46,9 +46,6 @@ class DatabaseHandler {
   }
 
   Future<void> _onUpgrade(Database db, int oldVersion, int newVersion) async {
-    if (oldVersion < 3) {
-      await db.execute('ALTER TABLE $tableNotes ADD COLUMN photopath TEXT');
-    }
   }
 
   Future<int> insertNote(Note note) async {

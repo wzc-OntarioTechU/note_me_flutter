@@ -37,9 +37,9 @@ class NoteList extends StatelessWidget {
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  if (note.subtitle.isNotEmpty)
+                  if (note.subject.isNotEmpty)
                     Text(
-                      note.subtitle,
+                      note.subject,
                       style: TextStyle(color: accentColor),
                     ),
                   if (note.body.isNotEmpty)

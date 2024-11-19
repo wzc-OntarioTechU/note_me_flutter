@@ -1,102 +1,135 @@
 import 'package:flutter/material.dart';
-import 'dart:async';
-import 'package:path/path.dart';
-import 'package:sqflite/sqflite.dart';
-import 'DatabaseHandler.dart';
-import 'NewNote.dart';
-
+import 'DatabaseHandler.dart'; // Custom database handler
+import 'NewNote.dart'; // Page to add/edit notes
+import 'note.dart'; // Note model
 
 void main() async {
-  WidgetsFlutterBinding.ensureInitialized(); // ensure that the db binding has loaded
-  final database = openDatabase(
-    join(await getDatabasesPath(), "notes.db"), // open/create the database file as notes.db
-    onCreate: (db, version) {
-      return db.execute("CREATE TABLE notes(id INTEGER PRIMARY KEY NOT NULL, title TEXT NOT NULL, subject TEXT, body TEXT, color INTEGER, photo_id_array TEXT);"
-          "CREATE TABLE photos(id INTEGER PRIMARY KEY NOT NULL, data BLOB NOT NULL);");
-    },
-    version: 1 // since we are starting anew
-  );
+  WidgetsFlutterBinding.ensureInitialized(); // Ensure the DB binding has loaded
   runApp(const NoteMe());
 }
 
 class NoteMe extends StatelessWidget {
   const NoteMe({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Note Me',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: const Color.fromRGBO(255, 128, 128, 255)),
+        colorScheme: ColorScheme.fromSeed(seedColor: Color.fromARGB(255, 240, 84, 110)),
         useMaterial3: true,
       ),
-      home: const HomePage(title: 'Note Me'),
+      home: const MainPage(),
     );
   }
 }
 
-class HomePage extends StatefulWidget {
-  const HomePage({super.key, required this.title});
-
-  final String title;
+class MainPage extends StatefulWidget {
+  const MainPage({super.key});
 
   @override
-  State<HomePage> createState() => HomePageState();
+  _MainPageState createState() => _MainPageState();
 }
 
-class HomePageState extends State<HomePage> {
-  int noteCount = 0;
+class _MainPageState extends State<MainPage> {
+  late DatabaseHandler _dbHandler;
+  List<Note> _noteList = [];
+  late TextEditingController _searchController;
 
-  Future<void> refreshFromDB() async {
-    final DatabaseHandler database = DatabaseHandler();
-    final db = database;
+  @override
+  void initState() {
+    super.initState();
+    _dbHandler = DatabaseHandler();
+    _searchController = TextEditingController();
+    _loadNotes(); // Load notes initially
+  }
+
+  Future<void> _loadNotes([String query = '']) async {
+    List<Note> notes = query.isEmpty
+        ? await _dbHandler.getAllNotes()
+        : await _dbHandler.searchNotes(query);
+
+    setState(() {
+      _noteList = notes;
+    });
+
+    if (notes.isEmpty) {
+      print("No notes found.");
+    } else {
+      for (var note in notes) {
+        print("Note: ${note.title}");
+      }
+    }
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text(widget.title),
+        title: const Text('Notes'),
+        backgroundColor: Color.fromARGB(255, 240, 84, 110),
       ),
-      body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
+      body: Padding(
+        padding: const EdgeInsets.all(8.0),
         child: Column(
-          // Column is also a layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
-          //
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
-          //
-          // TRY THIS: Invoke "debug painting" (choose the "Toggle Debug Paint"
-          // action in the IDE, or press "p" in the console), to see the
-          // wireframe for each widget.
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            // TODO: Add conditional Check
-            Text(
-              'No notes',
-              style: Theme.of(context).textTheme.headlineMedium,
+          children: [
+            // TextField(
+            //   // controller: _searchController,
+            //   // decoration: const InputDecoration(
+            //   //   hintText: 'Search notes...',
+            //   //   prefixIcon: Icon(Icons.search),
+            //   // ),
+            //   onChanged: (query) => _loadNotes(query),
+            // ),
+            const SizedBox(height: 10),
+            Expanded(
+              child: _noteList.isEmpty
+                  ? Center(
+                child: Text(
+                  'No notes',
+                  style: Theme.of(context).textTheme.headlineMedium,
+                ),
+              )
+                  : ListView.builder(
+                itemCount: _noteList.length,
+                itemBuilder: (context, index) {
+                  final note = _noteList[index];
+                  return ListTile(
+                    title: Text(note.title),
+                    subtitle: Text(note.subject ?? 'No subject'),
+                    onTap: () async {
+                      await Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              NewNote(editableNote: note),
+                        ),
+                      );
+                      _loadNotes();
+                    },
+                  );
+                },
+              ),
             ),
           ],
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.push(
+        onPressed: () async {
+          await Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => NewNote()),
+            MaterialPageRoute(builder: (context) => const NewNote()),
           );
+          _loadNotes();
         },
-        tooltip: 'Add a new note',
         child: const Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
+      ),
     );
   }
 }

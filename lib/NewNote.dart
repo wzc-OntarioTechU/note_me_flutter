@@ -17,7 +17,7 @@ class NewNote extends StatefulWidget {
 
 class _NewNoteState extends State<NewNote> {
   final TextEditingController _titleController = TextEditingController();
-  final TextEditingController _subtitleController = TextEditingController();
+  final TextEditingController _subjectController = TextEditingController();
   final TextEditingController _bodyController = TextEditingController();
   int _selectedColor = Colors.white.value;
   String? _photoPath;
@@ -31,7 +31,7 @@ class _NewNoteState extends State<NewNote> {
     // If editing an existing note, pre-fill fields
     if (widget.editableNote != null) {
       _titleController.text = widget.editableNote!.title;
-      _subtitleController.text = widget.editableNote!.subtitle;
+      _subjectController.text = widget.editableNote!.subject;
       _bodyController.text = widget.editableNote!.body;
       _selectedColor = widget.editableNote!.colour;
       _photoPath = widget.editableNote!.photopath;
@@ -40,7 +40,7 @@ class _NewNoteState extends State<NewNote> {
 
   Future<void> _saveNote() async {
     String title = _titleController.text.trim();
-    String subtitle = _subtitleController.text.trim();
+    String subject = _subjectController.text.trim();
     String body = _bodyController.text.trim();
 
     if (title.isEmpty) {
@@ -53,28 +53,29 @@ class _NewNoteState extends State<NewNote> {
     Note note = Note(
       id: widget.editableNote?.id,
       title: title,
-      subtitle: subtitle,
+      subject: subject,
       body: body,
       colour: _selectedColor,
       created: widget.editableNote?.created ?? DateTime.now(),
       photopath: _photoPath,
     );
 
-    // TODO: Fix this method to navigate to the main activity
+    print(note.id);
+    print(note.title);
+    print(note.subject);
+    print(note.body);
+    print(note.colour);
+    print(note.created);
+    print(note.photopath);
     if (widget.editableNote == null) {
       await _dbHandler.insertNote(note);
-
-      Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => NewNote()));
     } else {
       await _dbHandler.updateNote(note);
     }
 
     if (Navigator.canPop(context)) {
+      print("reached");
       Navigator.pop(context);
-    } else {
-      SystemNavigator.pop();
     }
   }
 
@@ -173,9 +174,9 @@ class _NewNoteState extends State<NewNote> {
             ),
             const SizedBox(height: 10),
             TextField(
-              controller: _subtitleController,
+              controller: _subjectController,
               decoration: const InputDecoration(
-                labelText: "Subtitle",
+                labelText: "subject",
                 border: OutlineInputBorder(),
               ),
             ),
