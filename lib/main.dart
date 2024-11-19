@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/widgets.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
+import 'DatabaseHandler.dart';
 
 
 void main() async {
@@ -48,6 +49,7 @@ class HomePageState extends State<HomePage> {
   int noteCount = 0;
 
   Future<void> refreshFromDB() async {
+    final DatabaseHandler database = DatabaseHandler();
     final db = await database;
   }
 

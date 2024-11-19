@@ -6,16 +6,16 @@ import 'package:flutter/material.dart';
 import 'note.dart';
 import 'DatabaseHandler.dart';
 
-class NewNotePage extends StatefulWidget {
+class NewNote extends StatefulWidget {
   final Note? editableNote;
 
-  const NewNotePage({Key? key, this.editableNote}) : super(key: key);
+  const NewNote({Key? key, this.editableNote}) : super(key: key);
 
   @override
-  _NewNotePageState createState() => _NewNotePageState();
+  _NewNoteState createState() => _NewNoteState();
 }
 
-class _NewNotePageState extends State<NewNotePage> {
+class _NewNoteState extends State<NewNote> {
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _subtitleController = TextEditingController();
   final TextEditingController _bodyController = TextEditingController();

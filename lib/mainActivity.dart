@@ -66,12 +66,12 @@ class _MainPageState extends State<MainPage> {
                   final note = _noteList[index];
                   return ListTile(
                     title: Text(note.title),
-                    subtitle: Text(note.content),
+                    subtitle: Text(note.subtitle),
                     onTap: () {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => NewNotePage(note: note),
+                          builder: (context) => NewNote(),
                         ),
                       ).then((_) => _loadNotes());
                     },
@@ -86,7 +86,7 @@ class _MainPageState extends State<MainPage> {
         onPressed: () {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => NewNotePage()),
+            MaterialPageRoute(builder: (context) => NewNote()),
           ).then((_) => _loadNotes());
         },
         child: Icon(Icons.add),

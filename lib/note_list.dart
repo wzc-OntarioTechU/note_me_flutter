@@ -32,7 +32,7 @@ class NoteList extends StatelessWidget {
                 children: [
                   Text(
                     note.title,
-                    style: Theme.of(context).textTheme.headline6?.copyWith(
+                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
                       color: Colors.black,
                       fontWeight: FontWeight.bold,
                     ),
