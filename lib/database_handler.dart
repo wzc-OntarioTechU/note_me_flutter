@@ -4,7 +4,7 @@ import 'note.dart'; // Assuming you have a Note class similar to your Java model
 
 class DatabaseHandler {
   static const _databaseName = 'flutter_note.db';
-  static const _databaseVersion = 4;
+  static const _databaseVersion = 1;
 
   static const tableNotes = 'notes';
 
@@ -36,11 +36,9 @@ class DatabaseHandler {
       CREATE TABLE $tableNotes (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         title TEXT,
-        subject TEXT,
+        subtitle TEXT,
         body TEXT,
-        colour INTEGER,
-        created INTEGER,
-        photopath TEXT
+        created INTEGER
       )
     ''');
   }
@@ -62,17 +60,6 @@ class DatabaseHandler {
     });
   }
 
-  Future<Note?> getNoteById(int id) async {
-    final db = await database;
-    final List<Map<String, dynamic>> maps =
-    await db.query(tableNotes, where: 'id = ?', whereArgs: [id]);
-
-    if (maps.isNotEmpty) {
-      return Note.fromMap(maps.first);
-    }
-    return null;
-  }
-
   Future<int> updateNote(Note note) async {
     final db = await database;
     return await db.update(
@@ -81,28 +68,6 @@ class DatabaseHandler {
       where: 'id = ?',
       whereArgs: [note.id],
     );
-  }
-
-  Future<int> deleteNoteById(int id) async {
-    final db = await database;
-    return await db.delete(
-      tableNotes,
-      where: 'id = ?',
-      whereArgs: [id],
-    );
-  }
-
-  Future<List<Note>> searchNotes(String filter) async {
-    final db = await database;
-    final List<Map<String, dynamic>> maps = await db.query(
-      tableNotes,
-      where: 'title LIKE ?',
-      whereArgs: ['%$filter%'],
-    );
-
-    return List.generate(maps.length, (i) {
-      return Note.fromMap(maps[i]);
-    });
   }
 
   Future<void> closeDatabase() async {

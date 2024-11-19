@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
-import 'DatabaseHandler.dart'; // Custom database handler
-import 'NewNote.dart'; // Page to add/edit notes
-import 'note.dart'; // Note model
+import 'database_handler.dart';
+import 'new_note.dart';
+import 'note.dart';
+import 'note_list.dart';
 
 void main() async {
-  WidgetsFlutterBinding.ensureInitialized(); // Ensure the DB binding has loaded
+  WidgetsFlutterBinding.ensureInitialized();
   runApp(const NoteMe());
 }
 
@@ -16,7 +17,7 @@ class NoteMe extends StatelessWidget {
     return MaterialApp(
       title: 'Note Me',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Color.fromARGB(255, 240, 84, 110)),
+        colorScheme: ColorScheme.fromSeed(seedColor: const Color.fromARGB(255, 240, 84, 110)),
         useMaterial3: true,
       ),
       home: const MainPage(),
@@ -28,10 +29,10 @@ class MainPage extends StatefulWidget {
   const MainPage({super.key});
 
   @override
-  _MainPageState createState() => _MainPageState();
+  MainPageState createState() => MainPageState();
 }
 
-class _MainPageState extends State<MainPage> {
+class MainPageState extends State<MainPage> {
   late DatabaseHandler _dbHandler;
   List<Note> _noteList = [];
   late TextEditingController _searchController;
@@ -44,22 +45,12 @@ class _MainPageState extends State<MainPage> {
     _loadNotes(); // Load notes initially
   }
 
-  Future<void> _loadNotes([String query = '']) async {
-    List<Note> notes = query.isEmpty
-        ? await _dbHandler.getAllNotes()
-        : await _dbHandler.searchNotes(query);
+  Future<void> _loadNotes() async {
+    List<Note> notes = await _dbHandler.getAllNotes();
 
     setState(() {
       _noteList = notes;
     });
-
-    if (notes.isEmpty) {
-      print("No notes found.");
-    } else {
-      for (var note in notes) {
-        print("Note: ${note.title}");
-      }
-    }
   }
 
   @override
@@ -68,12 +59,22 @@ class _MainPageState extends State<MainPage> {
     super.dispose();
   }
 
+  void _handleNoteTap(Note note) async {
+    await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => NewNote(editableNote: note),
+      ),
+    );
+    _loadNotes();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Notes'),
-        backgroundColor: Color.fromARGB(255, 240, 84, 110),
+        backgroundColor: const Color.fromARGB(255, 240, 84, 110),
       ),
       body: Padding(
         padding: const EdgeInsets.all(8.0),
@@ -96,25 +97,9 @@ class _MainPageState extends State<MainPage> {
                   style: Theme.of(context).textTheme.headlineMedium,
                 ),
               )
-                  : ListView.builder(
-                itemCount: _noteList.length,
-                itemBuilder: (context, index) {
-                  final note = _noteList[index];
-                  return ListTile(
-                    title: Text(note.title),
-                    subtitle: Text(note.subject ?? 'No subject'),
-                    onTap: () async {
-                      await Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) =>
-                              NewNote(editableNote: note),
-                        ),
-                      );
-                      _loadNotes();
-                    },
-                  );
-                },
+                  : NoteList(
+                notes: _noteList,
+                onNoteTap: _handleNoteTap,
               ),
             ),
           ],

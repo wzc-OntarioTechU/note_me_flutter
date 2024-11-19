@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'note.dart';
 
@@ -15,12 +13,11 @@ class NoteList extends StatelessWidget {
       itemCount: notes.length,
       itemBuilder: (context, index) {
         final note = notes[index];
-        final accentColor = Color(note.colour).withOpacity(0.5);
 
         return GestureDetector(
           onTap: () => onNoteTap(note),
           child: Card(
-            color: Color(note.colour),
+            color: Colors.white,
             margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(10),
@@ -29,7 +26,9 @@ class NoteList extends StatelessWidget {
               padding: const EdgeInsets.all(16.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min, // Allow dynamic height
                 children: [
+                  // Title
                   Text(
                     note.title,
                     style: Theme.of(context).textTheme.titleLarge?.copyWith(
@@ -37,22 +36,33 @@ class NoteList extends StatelessWidget {
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  if (note.subject.isNotEmpty)
-                    Text(
-                      note.subject,
-                      style: TextStyle(color: accentColor),
+                  const SizedBox(height: 8),
+
+                  // subtitle
+                  if (note.subtitle.isNotEmpty)
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 8.0),
+                      child: Text(
+                        note.subtitle,
+                      ),
                     ),
+
+                  // Body
                   if (note.body.isNotEmpty)
-                    Text(
-                      note.body,
-                      style: TextStyle(color: accentColor),
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 2.0),
+                      child: Text(
+                        note.body,
+                        style: const TextStyle(fontSize: 18),
+                      ),
                     ),
-                  const SizedBox(height: 10),
-                  if (note.photopath != null && note.photopath!.isNotEmpty)
-                    _buildImage(note.photopath!),
-                  Text(
-                    "Created: ${_formatDate(note.created)}",
-                    style: TextStyle(color: accentColor, fontSize: 12),
+
+                  Padding(
+                    padding: const EdgeInsets.only(top: 2.0),
+                    child: Text(
+                      "Created: ${_formatDate(note.created)}",
+                      style: const TextStyle(fontSize: 12),
+                    ),
                   ),
                 ],
               ),
@@ -61,21 +71,6 @@ class NoteList extends StatelessWidget {
         );
       },
     );
-  }
-
-  Widget _buildImage(String photoPath) {
-    if (File(photoPath).existsSync()) {
-      return Padding(
-        padding: const EdgeInsets.only(top: 10.0),
-        child: Image.file(
-          File(photoPath),
-          fit: BoxFit.cover,
-          height: 150,
-        ),
-      );
-    } else {
-      return const SizedBox(); // Empty space if image file doesn't exist
-    }
   }
 
   String _formatDate(DateTime date) {
