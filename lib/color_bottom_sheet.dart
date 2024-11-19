@@ -3,13 +3,13 @@ import 'package:flutter/material.dart';
 class ColorBottomSheet extends StatelessWidget {
   final Function(Color) onColorSelected;
 
-  const ColorBottomSheet({Key? key, required this.onColorSelected}) : super(key: key);
+  const ColorBottomSheet({super.key, required this.onColorSelected});
 
   @override
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(16.0),
-      decoration: BoxDecoration(
+      decoration: const BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.vertical(top: Radius.circular(16.0)),
       ),
@@ -28,7 +28,7 @@ class ColorBottomSheet extends StatelessWidget {
           ),
           const SizedBox(height: 16),
           IconButton(
-            icon: Icon(Icons.close),
+            icon: const Icon(Icons.close),
             onPressed: () => Navigator.of(context).pop(),
             tooltip: "Close",
           ),
@@ -46,7 +46,7 @@ class ColorBottomSheet extends StatelessWidget {
       child: CircleAvatar(
         backgroundColor: color,
         radius: 24,
-        child: Icon(Icons.check, color: Colors.white, size: 16),
+        child: const Icon(Icons.check, color: Colors.white, size: 16),
       ),
     );
   }

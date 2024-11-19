@@ -7,7 +7,7 @@ class NoteList extends StatelessWidget {
   final List<Note> notes;
   final Function(Note) onNoteTap;
 
-  const NoteList({Key? key, required this.notes, required this.onNoteTap}) : super(key: key);
+  const NoteList({super.key, required this.notes, required this.onNoteTap});
 
   @override
   Widget build(BuildContext context) {

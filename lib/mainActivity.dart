@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:sqflite/sqflite.dart'; // Assuming sqflite for database
+// Assuming sqflite for database
 import 'DatabaseHandler.dart'; // Custom Dart equivalent of DatabaseHandler
 import 'NewNote.dart';
-import 'new_note_page.dart'; // Page for adding/editing notes
+// Page for adding/editing notes
 import 'note.dart'; // Note model
 
 class MainPage extends StatefulWidget {
+  const MainPage({super.key});
+
   @override
   _MainPageState createState() => _MainPageState();
 }
@@ -43,22 +45,22 @@ class _MainPageState extends State<MainPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Notes'),
+        title: const Text('Notes'),
         backgroundColor: Colors.blueAccent,
       ),
       body: Padding(
-        padding: EdgeInsets.all(8.0),
+        padding: const EdgeInsets.all(8.0),
         child: Column(
           children: [
             TextField(
               controller: _searchController,
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 hintText: 'Search notes...',
                 prefixIcon: Icon(Icons.search),
               ),
               onChanged: (query) => _loadNotes(query),
             ),
-            SizedBox(height: 10),
+            const SizedBox(height: 10),
             Expanded(
               child: ListView.builder(
                 itemCount: _noteList.length,
@@ -71,7 +73,7 @@ class _MainPageState extends State<MainPage> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => NewNote(),
+                          builder: (context) => const NewNote(),
                         ),
                       ).then((_) => _loadNotes());
                     },
@@ -86,10 +88,10 @@ class _MainPageState extends State<MainPage> {
         onPressed: () {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => NewNote()),
+            MaterialPageRoute(builder: (context) => const NewNote()),
           ).then((_) => _loadNotes());
         },
-        child: Icon(Icons.add),
+        child: const Icon(Icons.add),
       ),
     );
   }

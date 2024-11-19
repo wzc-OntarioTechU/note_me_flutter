@@ -1,6 +1,6 @@
-import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 // import 'package:image_picker/image_picker.dart';
 // import 'package:path_provider/path_provider.dart';
 import 'note.dart';
@@ -9,7 +9,7 @@ import 'DatabaseHandler.dart';
 class NewNote extends StatefulWidget {
   final Note? editableNote;
 
-  const NewNote({Key? key, this.editableNote}) : super(key: key);
+  const NewNote({super.key, this.editableNote});
 
   @override
   _NewNoteState createState() => _NewNoteState();
@@ -45,7 +45,7 @@ class _NewNoteState extends State<NewNote> {
 
     if (title.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Please add a note title")),
+        const SnackBar(content: Text("Please add a note title")),
       );
       return;
     }
@@ -60,13 +60,22 @@ class _NewNoteState extends State<NewNote> {
       photopath: _photoPath,
     );
 
+    // TODO: Fix this method to navigate to the main activity
     if (widget.editableNote == null) {
       await _dbHandler.insertNote(note);
+
+      Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => NewNote()));
     } else {
       await _dbHandler.updateNote(note);
     }
 
-    Navigator.pop(context);
+    if (Navigator.canPop(context)) {
+      Navigator.pop(context);
+    } else {
+      SystemNavigator.pop();
+    }
   }
 
   // Future<void> _pickImage() async {
@@ -145,35 +154,35 @@ class _NewNoteState extends State<NewNote> {
         backgroundColor: Color(_selectedColor),
         actions: [
           IconButton(
-            icon: Icon(Icons.save),
+            icon: const Icon(Icons.save),
             onPressed: _saveNote,
           ),
         ],
       ),
       body: Container(
         color: Color(_selectedColor),
-        padding: EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
             TextField(
               controller: _titleController,
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 labelText: "Title",
                 border: OutlineInputBorder(),
               ),
             ),
-            SizedBox(height: 10),
+            const SizedBox(height: 10),
             TextField(
               controller: _subtitleController,
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 labelText: "Subtitle",
                 border: OutlineInputBorder(),
               ),
             ),
-            SizedBox(height: 10),
+            const SizedBox(height: 10),
             TextField(
               controller: _bodyController,
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 labelText: "Body",
                 border: OutlineInputBorder(),
               ),

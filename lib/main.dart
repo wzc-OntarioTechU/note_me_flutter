@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
-import 'package:flutter/widgets.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 import 'DatabaseHandler.dart';
+import 'NewNote.dart';
 
 
 void main() async {
@@ -28,7 +28,7 @@ class NoteMe extends StatelessWidget {
     return MaterialApp(
       title: 'Note Me',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Color.fromRGBO(255, 128, 128, 255)),
+        colorScheme: ColorScheme.fromSeed(seedColor: const Color.fromRGBO(255, 128, 128, 255)),
         useMaterial3: true,
       ),
       home: const HomePage(title: 'Note Me'),
@@ -50,7 +50,7 @@ class HomePageState extends State<HomePage> {
 
   Future<void> refreshFromDB() async {
     final DatabaseHandler database = DatabaseHandler();
-    final db = await database;
+    final db = database;
   }
 
   @override
@@ -79,19 +79,22 @@ class HomePageState extends State<HomePage> {
           // wireframe for each widget.
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            const Text(
-              'You have pushed the button this many times:',
-            ),
+            // TODO: Add conditional Check
             Text(
-              'hi',
+              'No notes',
               style: Theme.of(context).textTheme.headlineMedium,
             ),
           ],
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: refreshFromDB,
-        tooltip: 'Increment',
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => NewNote()),
+          );
+        },
+        tooltip: 'Add a new note',
         child: const Icon(Icons.add),
       ), // This trailing comma makes auto-formatting nicer for build methods.
     );
